@@ -127,7 +127,7 @@ def evaluate_model(name, pipeline, X_train, y_train, X_val, y_val):
 
     plt.savefig(filepath)
     plt.show(block=False)
-    plt.pause(5)
+    plt.pause(3)
     plt.close()
 
     return {"Accuracy": acc, "Train Accuracy": train_acc, "Precision": prec, "Recall": rec, "F1": f1}
@@ -159,6 +159,7 @@ def plot_train_val_accuracy(results):
 
 
 
+# PRINT SUMMARY TABLE
 def print_summary(results):
     print("\n" + "="*60)
     print(f"{'Model':<20} {'Accuracy':>10} {'Precision':>10} {'Recall':>10} {'F1':>10}")
