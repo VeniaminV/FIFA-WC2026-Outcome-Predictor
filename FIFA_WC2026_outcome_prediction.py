@@ -27,6 +27,16 @@ def load_data():
     test  = pd.read_csv(os.path.join(base, "test.csv"))
     return train, test
 
+
+def get_results_dir():
+    # Create a results folder in the same folder as this script
+    base = os.path.dirname(os.path.abspath(__file__))
+    results_dir = os.path.join(base, "results")
+
+    os.makedirs(results_dir, exist_ok=True)
+
+    return results_dir
+
 # PREPARE DATA
 def prepare_data(train, test):
     drop_cols = ["team_name", "country_code", "confederation"]
@@ -103,12 +113,21 @@ def evaluate_model(name, pipeline, X_train, y_train, X_val, y_val):
     plt.title(f"Confusion Matrix — {name}")
     plt.tight_layout()
 
-    # Save as PNG in the same folder as the script
-    base     = os.path.dirname(os.path.abspath(__file__))
-    filename = f"confusion_matrix_{name.replace(' ', '_').replace('(', '').replace(')', '')}.png"
-    plt.savefig(os.path.join(base, filename))
+    # Save as PNG in the results folder
+    results_dir = get_results_dir()
+
+    safe_name = (
+        name.replace(" ", "_")
+            .replace("(", "")
+            .replace(")", "")
+    )
+
+    filename = f"confusion_matrix_{safe_name}.png"
+    filepath = os.path.join(results_dir, filename)
+
+    plt.savefig(filepath)
     plt.show(block=False)
-    plt.pause(3)
+    plt.pause(5)
     plt.close()
 
     return {"Accuracy": acc, "Train Accuracy": train_acc, "Precision": prec, "Recall": rec, "F1": f1}
@@ -130,14 +149,16 @@ def plot_train_val_accuracy(results):
     plt.legend()
     plt.tight_layout()
 
-    base = os.path.dirname(os.path.abspath(__file__))
-    plt.savefig(os.path.join(base, "train_val_accuracy.png"))
+    results_dir = get_results_dir()
+    filepath = os.path.join(results_dir, "train_val_accuracy.png")
+
+    plt.savefig(filepath)
     plt.show(block=False)
     plt.pause(5)
     plt.close()
 
 
-# PRINT SUMMARY TABLE
+
 def print_summary(results):
     print("\n" + "="*60)
     print(f"{'Model':<20} {'Accuracy':>10} {'Precision':>10} {'Recall':>10} {'F1':>10}")
@@ -154,10 +175,10 @@ def print_summary(results):
 
 #MAIN
 def main():
-    train, test                              = load_data()
+    train, test                             = load_data()
     X_train, X_val, y_train, y_val, X_test  = prepare_data(train, test)
-    pipelines                                = build_pipelines()
-    results                                  = {}
+    pipelines                               = build_pipelines()
+    results                                 = {}
 
     for name, pipeline in pipelines.items():
         trained        = train_model(pipeline, X_train, y_train)
