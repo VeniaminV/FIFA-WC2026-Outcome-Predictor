@@ -150,6 +150,8 @@ def print_summary(results):
     best = max(results, key=lambda x: results[x]["F1"])
     print(f"\nBest model by F1: {best} ({results[best]['F1']:.4f})")
 
+
+
 #MAIN
 def main():
     train, test                              = load_data()
