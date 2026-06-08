@@ -1,13 +1,20 @@
-import pandas as pd
-import numpy as np
-import os
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-from sklearn.pipeline import Pipeline
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
+import pandas as pd        # data loading and manipulation (reading CSVs, DataFrames)
+import numpy as np         # numerical operations, used under the hood by scikit-learn
+import os                  # file path handling so the script finds CSVs in the right folder
+
+from sklearn.model_selection import train_test_split   # splits data into training and validation sets
+from sklearn.preprocessing import StandardScaler       # normalizes features to the same scale before modeling
+from sklearn.decomposition import PCA                  # dimensionality reduction, optional preprocessing step
+from sklearn.pipeline import Pipeline                  # chains scaler + PCA + model into one clean object
+from sklearn.linear_model import LogisticRegression    # our baseline linear classifier
+from sklearn.svm import SVC                            # Support Vector Machine with RBF kernel, our non-linear classifier
+from sklearn.metrics import (                          # evaluation metrics to measure model performance
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    classification_report
+)
 
 # LOAD DATA
 # Get the folder where this script lives so file paths always work correctly
