@@ -83,10 +83,12 @@ def train_model(pipeline, X_train, y_train):
 
 
 # EVALUATE MODEL + CONFUSION MATRIX 
-def evaluate_model(name, pipeline, X_val, y_val):
+def evaluate_model(name, pipeline, X_train, y_train, X_val, y_val):
+    train_pred = pipeline.predict(X_train)
     y_pred = pipeline.predict(X_val)
 
     acc  = accuracy_score(y_val, y_pred)
+    train_acc  = accuracy_score(y_train, train_pred)
     prec = precision_score(y_val, y_pred)
     rec  = recall_score(y_val, y_pred)
     f1   = f1_score(y_val, y_pred)
@@ -105,9 +107,34 @@ def evaluate_model(name, pipeline, X_val, y_val):
     base     = os.path.dirname(os.path.abspath(__file__))
     filename = f"confusion_matrix_{name.replace(' ', '_').replace('(', '').replace(')', '')}.png"
     plt.savefig(os.path.join(base, filename))
-    plt.show()
+    plt.show(block=False)
+    plt.pause(3)
+    plt.close()
 
-    return {"Accuracy": acc, "Precision": prec, "Recall": rec, "F1": f1}
+    return {"Accuracy": acc, "Train Accuracy": train_acc, "Precision": prec, "Recall": rec, "F1": f1}
+
+
+# PLOT TRAIN VS VALIDATION ACCURACY
+def plot_train_val_accuracy(results):
+    model_names = list(results.keys())
+    train_scores = [results[name]["Train Accuracy"] for name in model_names]
+    val_scores   = [results[name]["Accuracy"] for name in model_names]
+
+    plt.figure()
+    plt.plot(model_names, train_scores, marker='o', label="Train Accuracy")
+    plt.plot(model_names, val_scores,   marker='o', linestyle='--', label="Val Accuracy")
+
+    plt.xlabel("Model")
+    plt.ylabel("Accuracy")
+    plt.title("FIFA WC2026 — Train vs Validation Accuracy")
+    plt.legend()
+    plt.tight_layout()
+
+    base = os.path.dirname(os.path.abspath(__file__))
+    plt.savefig(os.path.join(base, "train_val_accuracy.png"))
+    plt.show(block=False)
+    plt.pause(5)
+    plt.close()
 
 
 # PRINT SUMMARY TABLE
@@ -132,10 +159,10 @@ def main():
 
     for name, pipeline in pipelines.items():
         trained        = train_model(pipeline, X_train, y_train)
-        results[name]  = evaluate_model(name, trained, X_val, y_val)
+        results[name] = evaluate_model(name, trained, X_train, y_train, X_val, y_val)
 
     print_summary(results)
-
+    plot_train_val_accuracy(results)
 
 if __name__ == "__main__":
     main()
