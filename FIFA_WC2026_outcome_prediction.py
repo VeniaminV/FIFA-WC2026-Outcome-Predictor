@@ -30,3 +30,30 @@ X_train, X_val, y_train, y_val = train_test_split(
 
 print(f"Train size: {X_train.shape}, Val size: {X_val.shape}")
 print(f"Features: {X_train.shape[1]}")
+
+
+# LEARNING ALGORITHMS
+pipelines = {
+    # Logistic Regression — linear classifier, used as our baseline
+    "LR (no PCA)": Pipeline([
+        ("scaler", StandardScaler()),
+        ("model",  LogisticRegression(max_iter=1000, random_state=42))
+    ]),
+    # Logistic Regression with PCA preprocessing — tests if dimensionality reduction helps LR
+    "LR + PCA": Pipeline([
+        ("scaler", StandardScaler()),
+        ("pca",    PCA(n_components=0.95)),
+        ("model",  LogisticRegression(max_iter=1000, random_state=42))
+    ]),
+    # SVM with RBF kernel — non-linear classifier, captures complex feature relationships
+    "SVM (no PCA)": Pipeline([
+        ("scaler", StandardScaler()),
+        ("model",  SVC(kernel="rbf", random_state=42))
+    ]),
+    # SVM with PCA preprocessing — tests if dimensionality reduction helps SVM
+    "SVM + PCA": Pipeline([
+        ("scaler", StandardScaler()),
+        ("pca",    PCA(n_components=0.95)),
+        ("model",  SVC(kernel="rbf", random_state=42))
+    ]),
+}
