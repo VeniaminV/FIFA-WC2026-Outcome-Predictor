@@ -57,3 +57,34 @@ pipelines = {
         ("model",  SVC(kernel="rbf", random_state=42))
     ]),
 }
+
+# TRAIN AND EVALUATE
+print("\n" + "="*60)
+print(f"{'Model':<20} {'Accuracy':>10} {'Precision':>10} {'Recall':>10} {'F1':>10}")
+print("="*60)
+
+results = {}
+
+for name, pipeline in pipelines.items():
+    pipeline.fit(X_train, y_train)
+    y_pred = pipeline.predict(X_val)
+
+    acc  = accuracy_score(y_val, y_pred)
+    prec = precision_score(y_val, y_pred)
+    rec  = recall_score(y_val, y_pred)
+    f1   = f1_score(y_val, y_pred)
+
+    results[name] = {"Accuracy": acc, "Precision": prec, "Recall": rec, "F1": f1}
+    print(f"{name:<20} {acc:>10.4f} {prec:>10.4f} {rec:>10.4f} {f1:>10.4f}")
+
+print("="*60)
+
+# REPORT FOR EACH MODEL
+for name, pipeline in pipelines.items():
+    y_pred = pipeline.predict(X_val)
+    print(f"\n--- {name} ---")
+    print(classification_report(y_val, y_pred, target_names=["Not Winner", "Winner"]))
+
+# BEST MODEL
+best = max(results, key=lambda x: results[x]["F1"])
+print(f"\nBest model by F1: {best} ({results[best]['F1']:.4f})")
