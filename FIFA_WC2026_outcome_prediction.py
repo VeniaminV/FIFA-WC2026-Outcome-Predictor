@@ -151,6 +151,37 @@ def print_summary(results):
     print(f"\nBest model by F1: {best} ({results[best]['F1']:.4f})")
 
 
+# INTERACTIVE TEAM PREDICTION
+def predict_team(pipelines, test):
+    print("\n" + "="*60)
+    print("TEAM WIN PREDICTOR")
+    print("="*60)
+
+    drop_cols = ["team_name", "country_code", "confederation"]
+
+    while True:
+        team_name = input("\nEnter team name (or 'quit' to exit): ").strip()
+
+        if team_name.lower() == "quit":
+            break
+
+        # search for team in test.csv 
+        match = test[test["team_name"].str.lower() == team_name.lower()]
+
+        if match.empty:
+            print(f"  Team '{team_name}' not found. Available teams:")
+            print("  " + ", ".join(test["team_name"].tolist()))
+            continue
+
+        team_row   = match.drop(columns=drop_cols)
+        best_model = "SVM (no PCA)"  # use best performing model automatically
+        pipeline   = pipelines[best_model]
+        prediction = pipeline.predict(team_row)[0]
+
+        print(f"\n  Team:       {match['team_name'].values[0]}")
+        print(f"  Model:      {best_model}")
+        print(f"  Prediction: {'Winner ' if prediction == 1 else 'Not Winner '}")
+
 
 #MAIN
 def main():
@@ -165,6 +196,7 @@ def main():
 
     print_summary(results)
     plot_train_val_accuracy(results)
+    predict_team(pipelines, test)
 
 if __name__ == "__main__":
     main()
